@@ -216,7 +216,6 @@ function drawPlayerView(){
         );
         //draw hp bar over players head
         console.log(curP.hp);
-        console.log("fuck");
         ctx.fillStyle = "red";
         ctx.fillRect((y*blocksize)-2, x*blocksize, blocksize, 2);
         ctx.fillStyle = "green";
