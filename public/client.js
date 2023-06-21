@@ -177,6 +177,24 @@ function drawPlayerView(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let y in tile_map){
     for (let x in tile_map[y]){
+      if (tile_map[y][x]===-1){
+        ctx.drawImage(
+          spritesheet,
+          0, 48,
+          blocksize, blocksize,
+          y*blocksize, x*blocksize,
+          blocksize, blocksize
+        )
+        if (Math.floor(Math.random()*100) > 98){
+          ctx.drawImage(
+            spritesheet,
+            272, 1264,
+            blocksize, blocksize,
+            y*blocksize, x*blocksize,
+            blocksize, blocksize
+          )
+        }
+      }
       for (let obj in tile_map[y][x].objects){
         let curObj = tile_map[y][x].objects[obj];
         ctx.drawImage(
@@ -196,6 +214,13 @@ function drawPlayerView(){
           y*blocksize, x*blocksize,
           blocksize, blocksize
         );
+        //draw hp bar over players head
+        console.log(curP.hp);
+        console.log("fuck");
+        ctx.fillStyle = "red";
+        ctx.fillRect((y*blocksize)-2, x*blocksize, blocksize, 2);
+        ctx.fillStyle = "green";
+        ctx.fillRect((y*blocksize)-2, x*blocksize, (curP.hp/blocksize)*100, 2);
       }
     }
   }
