@@ -103,6 +103,7 @@ function updateProjectiles(){
       continue;
     }
     if (tile_map[p.x][p.y].players.length!==0){
+      let tPlayers = tile_map[p.x][p.y].players;
       if (tile_map[p.x][p.y].players[0].id!==p.player_id && tile_map[p.x][p.y].players[0].id!==undefined){
         //first player on tile hit!
         projectileHitPlayer(tile_map[p.x][p.y].players[0].id);
@@ -137,6 +138,7 @@ function removeProjectile(p){
 }
 
 function projectileHitPlayer(id){
+  //add hitsplat that follows player for a few frames
   console.log(`projectile hit player ${id}`);
   players[id].data.hp -= 10;
   io.to(id).emit("damagePlayer", -10);
@@ -286,9 +288,12 @@ function checkCollision(coords){
 function surroundingTiles(x, y){
   //x -/+ 10, y -/+ 10
   let map_section = [];
-  for (let i = x-10; i < x+10; i++){
+  x=x+1;
+  y=y+1;
+  for (let i = x-10; i < x+9; i++){
     let innerList = [];
-    for (let j = y-10; j < y+10; j++){
+    for (let j = y-10; j < y+9; j++){
+       
       if (i < 0 || i > 99 || j < 0 || j > 99){
         innerList.push(-1);//out of bounds tile
       } else {
@@ -340,6 +345,7 @@ function createNewPlayer(name, id){
   players[id]=temp_player_data;
   //then randomize x,y or something, spawn points etc
   setTimeout(() => {
+    
     addPlayerToTile(players[id]);
     readyPlayer(players[id]);
   }, 2000);
@@ -350,7 +356,8 @@ function addPlayerToTile(p){
     {
       x:p.data.skin,
       y:p.data.facing,
-      id:p.socket_id
+      id:p.socket_id,
+      hp:p.data.hp
     }
   )
 }
@@ -416,9 +423,23 @@ function adminLogin(pword, id){
   }
 }
 
+function checkDummies(){
+  for (x in tile_map){
+    for (y in tile_map[x]){
+      for (p in tile_map[x][y].players){
+        let pCheck = tile_map[x][y].players[p];
+        if (pCheck.id===undefined){
+          tile_map[x][y].players.splice(p,1);
+        }
+      }
+    }
+  }
+}
+
 function main(){
   updatePlayers();
   updateProjectiles();
+  checkDummies();
 }
 
 app.get('/', (req, res) => {
